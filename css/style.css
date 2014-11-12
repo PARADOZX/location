@@ -1,0 +1,48 @@
+html, body {
+    height: 100%;
+    margin: 0px;
+    padding: 0px
+}
+#container {
+	max-width: 960px;
+	background-color: #eee;
+}
+.center {
+	margin: 0 auto;
+}
+header h2{
+	color: blue;
+}
+.location_button {
+	display: inline-block;
+	width:47.2%;
+	height:50vh;
+	line-height:50vh;
+	margin: 1%;
+	background-color: blue;
+	font-size:2em;
+	cursor: pointer;
+}
+#map_holder {
+	display: none;
+	height: 70%;
+}
+#map_menu {
+	display: none;
+	bottom: 30%;
+}
+.bottom_menu {
+	margin : 10px;
+}
+.bottom_menu button {
+	border-radius : 30%;
+	padding : 10px;
+}
+.text-center {
+	text-align: center;
+}
+/*@media only screen and (max-width: 709px) {
+	.location_button {
+		font-size:1em;
+	}
+}	*/
