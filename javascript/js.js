@@ -149,7 +149,18 @@ ns = {
 				answer = prompt('Enter a username at least 6 characters');
 			
 			if(good = ns.length_valid(answer)) {
-				alert(good);
+				$.ajax({
+					type : "GET",
+					url : "mark/db_access.php",
+					data : { user: answer, lat: ns.location.map.latitude, long: ns.location.map.longitude }
+
+					//to accommodate API class
+					// url : "locate/" + ns.location.map.latitude + "/" + ns.location.map.longitude
+				})
+				.done(function(data)
+				{
+					alert(data);
+				});
 			}
 		});
 	}//end of events method.
