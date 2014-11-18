@@ -1,8 +1,5 @@
 <?php
 
-
-
-
 //MAKE THIS A DAO OBJECT... LOOK IT UP www.sitecrafting.com/blog/php-patterns-part-ii
 //THE DAO OBJECT CAN CREATE THE VO OBJECT (VALUE OBJECT-- which holds the values of the retrieved data from the DB).
 //alternatively this can be the more complicated ORM (did not research this yet...)
@@ -23,7 +20,11 @@ class CoordsDAO
 			$this->request = $request;	
 
 			try {
-				$this->pdo = new PDO('mysql:dbname=location;host=localhost','root','Shiet1sv');
+				//localhost DB path
+				$this->pdo = new PDO('mysql:dbname=location;host=localhost','root','Shiet1sv') or die('FAILED CONNECTION');
+				//hosting DB path
+				// $this->pdo = new PDO('mysql:dbname=byjames1_location;host=localhost','byjames1_ling','Shiet1sv') or die('FAILED CONNECTION');
+
 				$this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			} catch (PDOException $e){
 				echo "Error : " + $e->getMessage();
@@ -51,7 +52,7 @@ class CoordsDAO
 			$q = "INSERT INTO locations (userID, lon, lat) VALUES (?, ?, ?)";
 			$stmt = $this->pdo->prepare($q);
 			if ($stmt->execute(array($userID, $this->request['long'], $this->request['lat']))){
-				echo "Location saved.";
+				echo true;
 			}
 		} catch (PDOException $e){
 			echo 'ERROR::' . $e->getMessage();

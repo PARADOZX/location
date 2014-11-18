@@ -10,8 +10,17 @@ html, body {
 .center {
 	margin: 0 auto;
 }
+#footer {
+	clear: both;
+}
 header h2{
 	color: blue;
+}
+.hide {
+	display: none;
+}
+#locate {
+	float: right;
 }
 .location_button {
 	display: inline-block;

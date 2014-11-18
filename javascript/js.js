@@ -92,20 +92,32 @@ ns = {
 			}
 		}
 	},
-	length_valid : function(answer)
+	length_valid : function(answer, playback)
 	{
 		if(answer && answer.length >= 6) {
 			return answer;
-		} else if(answer && answer.length < 6) {
-			alert('The username must be at least 6 characters long.');
 		} else {
-			alert('You must enter a username to continue.');
+			if(answer && answer.length < 6) {
+				alert('The username must be at least 6 characters long.');
+			} else alert('You must enter a username to continue');
+
+			//recursive function to show prompt if user continues to enter username too short or empty username
+			if (playback == true) {
+				var name = prompt('What is your username?');
+				//canceling prompt window will return null and escape recursive function
+				if (name !== null){
+					if (ns.length_valid(name, true)){
+						return name;
+					}
+				}
+			}
 		}
 	},
-
 	mark : document.getElementById('mark'),
 	locate : document.getElementById('locate'),
 	confirm_location : document.getElementById('confirm'),
+	saved_menu_mark : document.getElementById('saved_menu_mark'),
+	saved_menu : document.getElementById('saved_menu'),
 	events : function()
 	{
 		ns.mark.addEventListener('click', function(e)
@@ -140,6 +152,16 @@ ns = {
 			var locate = new ns.Animate(e.target);
 			locate.set_transition(1.5);
 			locate.explode(98, 100);
+
+			$(this).on('transitionend webkitTransitionEnd', function(e){
+				if(e.originalEvent.propertyName == "width") {
+					var good, 
+						name = prompt('What is your username?');
+					if (name != null) {
+						good = ns.length_valid(name, true);
+					}
+				}
+			});
 		});
 
 		ns.confirm_location.addEventListener('click', function()
@@ -153,14 +175,32 @@ ns = {
 					type : "GET",
 					url : "mark/db_access.php",
 					data : { user: answer, lat: ns.location.map.latitude, long: ns.location.map.longitude }
-
-					//to accommodate API class
-					// url : "locate/" + ns.location.map.latitude + "/" + ns.location.map.longitude
 				})
 				.done(function(data)
 				{
-					alert(data);
+					if (data == 1) {
+						$('#main').children().css('display','none');
+
+						saved_menu.style.display = "block";
+						
+						var name = document.createElement('span');
+						name.style.fontWeight = "bold";
+						var text = document.createTextNode(answer + '.');
+						name.appendChild(text);
+
+						var menu = document.getElementById('saved_menu_top');
+						menu.appendChild(name);
+					}
 				});
+			}
+		});
+
+		ns.saved_menu_mark.addEventListener('click', function(){
+			try {
+				ns.location.get_geolocation();
+				saved_menu.style.display = "none";
+			} catch(err){
+				alert(err);
 			}
 		});
 	}//end of events method.
