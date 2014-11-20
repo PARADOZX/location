@@ -2,5 +2,6 @@
 RewriteEngine on
 
 RewriteRule mark/(.*)?$ db_access.php [NC]
+RewriteRule locate/(.*)?$ db_access.php [NC]
 
 </IfModule>

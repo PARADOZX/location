@@ -8,10 +8,10 @@ class CoordsDAO
 	private $pdo;
 	private $request;
 
-	function __construct($request)
+	function __construct($request, $num_param)
 	{
-		//confirm 3 parameters in request
-		if (count($request) === 3) {
+		//confirm correct # of parameters in request
+		if (count($request) === $num_param) {
 			//confirm each parameter holds a value
 			foreach ($request as $key => $value) {
 				if ($value == '') throw new Exception('Error retrieving location data.  Please try again.');
@@ -55,6 +55,28 @@ class CoordsDAO
 				echo true;
 			}
 		} catch (PDOException $e){
+			echo 'ERROR::' . $e->getMessage();
+		}
+	}
+	public function loadData()
+	{
+		try {
+			$stmt = $this->pdo->prepare("SELECT username FROM users WHERE username = ?");
+			$stmt->execute(array($this->request['user']));
+			$count = $stmt->rowCount();
+			if ($count > 0) {
+				$stmt = $this->pdo->prepare("SELECT lon, lat FROM locations as l INNER JOIN users as u ON l.userID = u.userID WHERE username = ?");
+				$stmt->execute(array($this->request['user']));
+				$results_array = array();
+
+				while ($result = $stmt->fetch()){
+					$results_array[] = array('lon'=>$result['lon'], 'lat'=>$result['lat']);
+				}			
+				echo json_encode($results_array);
+			} else {
+				echo "Username not found.";
+			}
+		} catch (PDOException $e) {
 			echo 'ERROR::' . $e->getMessage();
 		}
 	}

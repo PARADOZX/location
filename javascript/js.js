@@ -4,6 +4,12 @@ $(document).ready(function(){
 var ns = ns || {};
 
 ns = {
+	mark : document.getElementById('mark'),
+	locate : document.getElementById('locate'),
+	confirm_location : document.getElementById('confirm'),
+	action_menu_mark : document.getElementById('action_menu_mark'),
+	action_menu_locate : document.getElementById('action_menu_locate'),
+	action_menu : document.getElementById('action_menu'),
 	Animate : function(elem)
 	{
 		this.elem = elem;
@@ -35,6 +41,34 @@ ns = {
 		        case error.UNKNOWN_ERROR:
 		            alert("An unknown error occurred.  Please try again later.");
 		            break;
+			}
+		},
+		find_location : function()
+		{
+			var good, 
+				name = prompt('What is your username?');
+			if (name != null) {
+				if(ns.length_valid(name, true)) {
+					$.ajax({
+						type : "GET",
+						url : "locate/db_access.php",
+						data : { user: name }
+					})
+					.done(function(data) {
+						//if data starts with '[' then username found.  
+						if (data.match(/^\[/)) {
+							var coords_json = $.parseJSON(data);
+							alert(coords_json);
+						} else {
+							$('#main').children().css('display','none');
+
+							action_menu.style.display = "block";
+									
+							var text = "Username not found."; 
+							document.getElementById('action_menu_message').innerHTML = text;
+						}
+					});
+				}
 			}
 		},
 		map : {
@@ -113,11 +147,6 @@ ns = {
 			}
 		}
 	},
-	mark : document.getElementById('mark'),
-	locate : document.getElementById('locate'),
-	confirm_location : document.getElementById('confirm'),
-	saved_menu_mark : document.getElementById('saved_menu_mark'),
-	saved_menu : document.getElementById('saved_menu'),
 	events : function()
 	{
 		ns.mark.addEventListener('click', function(e)
@@ -155,12 +184,9 @@ ns = {
 
 			$(this).on('transitionend webkitTransitionEnd', function(e){
 				if(e.originalEvent.propertyName == "width") {
-					var good, 
-						name = prompt('What is your username?');
-					if (name != null) {
-						good = ns.length_valid(name, true);
-					}
+					ns.location.find_location();
 				}
+
 			});
 		});
 
@@ -172,7 +198,7 @@ ns = {
 			
 			if(good = ns.length_valid(answer)) {
 				$.ajax({
-					type : "GET",
+					type : "GET",	//change to POST
 					url : "mark/db_access.php",
 					data : { user: answer, lat: ns.location.map.latitude, long: ns.location.map.longitude }
 				})
@@ -181,27 +207,37 @@ ns = {
 					if (data == 1) {
 						$('#main').children().css('display','none');
 
-						saved_menu.style.display = "block";
+						action_menu.style.display = "block";
 						
-						var name = document.createElement('span');
-						name.style.fontWeight = "bold";
-						var text = document.createTextNode(answer + '.');
-						name.appendChild(text);
+						var text = "Location saved successfully.  Retrieve your saved location(s) by clicking "; 
+						text += "'Locate' and entering the username: " + answer;
+						document.getElementById('action_menu_message').innerHTML = text;						
+						// var action_menu_top = document.getElementById('action_menu_top');
+						// var children = action_menu_top.childNodes;
+						// if (children.length === 4) action_menu_top.removeChild(children[3]);
 
-						var menu = document.getElementById('saved_menu_top');
-						menu.appendChild(name);
+						// var name = document.createElement('span');
+						// name.style.fontWeight = "bold";
+						// var text = document.createTextNode(answer + '.');
+						// name.appendChild(text);
+
+						// var menu = document.getElementById('action_menu_top');
+						// menu.appendChild(name);
 					}
 				});
 			}
 		});
 
-		ns.saved_menu_mark.addEventListener('click', function(){
+		ns.action_menu_mark.addEventListener('click', function(){
 			try {
 				ns.location.get_geolocation();
-				saved_menu.style.display = "none";
+				action_menu.style.display = "none";
 			} catch(err){
 				alert(err);
 			}
+		});
+		ns.action_menu_locate.addEventListener('click', function(){
+			ns.location.find_location();
 		});
 	}//end of events method.
 }; //end ns obj.
