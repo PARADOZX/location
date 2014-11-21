@@ -36,14 +36,14 @@ header h2{
 	display: none;
 	height: 70%;
 }
-#map_menu {
+#map_menu_confirm {
 	display: none;
 	bottom: 30%;
 }
-.bottom_menu {
+.margin10 {
 	margin : 10px;
 }
-.bottom_menu button {
+button {
 	border-radius : 30%;
 	padding : 10px;
 }

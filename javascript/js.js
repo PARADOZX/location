@@ -16,6 +16,7 @@ ns = {
 	},
 	location : {
 		geolocation_available : false,
+		get_location : false,
 		get_geolocation : function()
 		{
 			if(navigator.geolocation) {
@@ -55,17 +56,17 @@ ns = {
 						data : { user: name }
 					})
 					.done(function(data) {
-						//if data starts with '[' then username found.  
+						//if data starts with '[' then username found. 
 						if (data.match(/^\[/)) {
 							var coords_json = $.parseJSON(data);
-							alert(coords_json);
-						} else {
-							$('#main').children().css('display','none');
+							// alert(coords_json);
 
-							action_menu.style.display = "block";
-									
+							ns.location.get_location = true;
+							ns.location.map.generate_map(coords_json);
+								
+						} else {
 							var text = "Username not found."; 
-							document.getElementById('action_menu_message').innerHTML = text;
+							ns.show_action_menu(text);
 						}
 					});
 				}
@@ -84,17 +85,24 @@ ns = {
 			},
 			generate_map : function(position)
 			{
+				//clear action menu of any previous messages.
+				ns.action_menu.style.display = "none";
+
 				var map_holder = document.getElementById('map_holder');
 				var map_menu = document.getElementById('map_menu');
+				var map_menu_confirm = document.getElementById('map_menu_confirm');
 
 				map_holder.style.display = "block";
 				map_menu.style.display = "block";
-				$(ns.mark).css('display', 'none');
+				map_menu_confirm.style.display = "block";
+
 				$('#container, #main').css({
 					'height' : '100%'
 				});
-				
+
 				if(ns.location.geolocation_available) {
+					$(ns.mark).css('display', 'none');
+
 					ns.location.map.my_map = new google.maps.Map(map_holder, ns.location.map.map_options(position));
 
 					//create and set marker on map.
@@ -113,6 +121,22 @@ ns = {
 
 					marker.setMap(ns.location.map.my_map);
 
+					ns.location.geolocation_available = false;
+				}
+
+				if(ns.location.get_location) {
+					$(ns.locate).css('display', 'none');
+					ns.location.get_location = false;
+					
+					if (typeof position === 'object') {
+						//tryout
+						ns.location.map.my_map = new google.maps.Map(map_holder, { center : { lat: 30, lng: 30 }, zoom: 10 });
+						var lat_lng = new google.maps.LatLng(30,30);
+						var marker = ns.location.map.create_marker(lat_lng);
+						marker.setMap(ns.location.map.my_map);
+					} else {
+						ns.show_action_menu('Error parsing location data.');
+					}	
 				}
 			},
 			create_marker : function(lat_long)
@@ -125,6 +149,12 @@ ns = {
 				});
 			}
 		}
+	},
+	show_action_menu : function(text)
+	{
+		$('#main').children().css('display','none');
+		action_menu.style.display = "block";
+		document.getElementById('action_menu_message').innerHTML = text;
 	},
 	length_valid : function(answer, playback)
 	{
@@ -190,6 +220,7 @@ ns = {
 			});
 		});
 
+		//event handling of action_menu's confirm button
 		ns.confirm_location.addEventListener('click', function()
 		{
 			// console.log(ns.location.map.latitude);
@@ -205,33 +236,17 @@ ns = {
 				.done(function(data)
 				{
 					if (data == 1) {
-						$('#main').children().css('display','none');
-
-						action_menu.style.display = "block";
-						
 						var text = "Location saved successfully.  Retrieve your saved location(s) by clicking "; 
 						text += "'Locate' and entering the username: " + answer;
-						document.getElementById('action_menu_message').innerHTML = text;						
-						// var action_menu_top = document.getElementById('action_menu_top');
-						// var children = action_menu_top.childNodes;
-						// if (children.length === 4) action_menu_top.removeChild(children[3]);
-
-						// var name = document.createElement('span');
-						// name.style.fontWeight = "bold";
-						// var text = document.createTextNode(answer + '.');
-						// name.appendChild(text);
-
-						// var menu = document.getElementById('action_menu_top');
-						// menu.appendChild(name);
+						ns.show_action_menu(text);						
 					}
 				});
 			}
-		});
+		}); 
 
 		ns.action_menu_mark.addEventListener('click', function(){
 			try {
 				ns.location.get_geolocation();
-				action_menu.style.display = "none";
 			} catch(err){
 				alert(err);
 			}
