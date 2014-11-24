@@ -64,18 +64,27 @@ class CoordsDAO
 			$stmt = $this->pdo->prepare("SELECT username FROM users WHERE username = ?");
 			$stmt->execute(array($this->request['user']));
 			$count = $stmt->rowCount();
+
 			if ($count > 0) {
 				$stmt = $this->pdo->prepare("SELECT lon, lat FROM locations as l INNER JOIN users as u ON l.userID = u.userID WHERE username = ?");
 				$stmt->execute(array($this->request['user']));
-				$results_array = array();
+				$count = $stmt->rowCount();
+			
+				if($count > 0) {					
+					$results_array = array();
 
-				while ($result = $stmt->fetch()){
-					$results_array[] = array('lon'=>$result['lon'], 'lat'=>$result['lat']);
-				}			
-				echo json_encode($results_array);
+					while ($result = $stmt->fetch()){
+						$results_array[] = array('lon'=>$result['lon'], 'lat'=>$result['lat']);
+					}			
+					echo json_encode($results_array);
+				} else {
+					echo "No saved location for this username.";
+				}
+			
 			} else {
 				echo "Username not found.";
 			}
+
 		} catch (PDOException $e) {
 			echo 'ERROR::' . $e->getMessage();
 		}

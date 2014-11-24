@@ -10,6 +10,12 @@ html, body {
 .center {
 	margin: 0 auto;
 }
+.float-left {
+	float: left;
+}
+.float-right {
+	float: right;
+}
 #footer {
 	clear: both;
 }
@@ -36,7 +42,7 @@ header h2{
 	display: none;
 	height: 70%;
 }
-#map_menu_confirm {
+#map_menu_confirm, #map_menu_found {
 	display: none;
 	bottom: 30%;
 }

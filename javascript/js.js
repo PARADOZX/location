@@ -65,7 +65,7 @@ ns = {
 							ns.location.map.generate_map(coords_json);
 								
 						} else {
-							var text = "Username not found."; 
+							var text = data; 
 							ns.show_action_menu(text);
 						}
 					});
@@ -91,10 +91,10 @@ ns = {
 				var map_holder = document.getElementById('map_holder');
 				var map_menu = document.getElementById('map_menu');
 				var map_menu_confirm = document.getElementById('map_menu_confirm');
+				var map_menu_found = document.getElementById('map_menu_found');
 
 				map_holder.style.display = "block";
 				map_menu.style.display = "block";
-				map_menu_confirm.style.display = "block";
 
 				$('#container, #main').css({
 					'height' : '100%'
@@ -102,6 +102,8 @@ ns = {
 
 				if(ns.location.geolocation_available) {
 					$(ns.mark).css('display', 'none');
+					map_menu_confirm.style.display = "block";
+					map_menu_found.style.display = "none";
 
 					ns.location.map.my_map = new google.maps.Map(map_holder, ns.location.map.map_options(position));
 
@@ -126,14 +128,53 @@ ns = {
 
 				if(ns.location.get_location) {
 					$(ns.locate).css('display', 'none');
+					map_menu_found.style.display = "block";
+					map_menu_confirm.style.display = "none";
+
 					ns.location.get_location = false;
 					
 					if (typeof position === 'object') {
-						//tryout
-						ns.location.map.my_map = new google.maps.Map(map_holder, { center : { lat: 30, lng: 30 }, zoom: 10 });
-						var lat_lng = new google.maps.LatLng(30,30);
-						var marker = ns.location.map.create_marker(lat_lng);
-						marker.setMap(ns.location.map.my_map);
+
+						var num = 0,
+							length = position.length,
+							scroll_previous = document.getElementById('scroll_previous'),
+							scroll_next = document.getElementById('scroll_next');
+
+						var found_map = function(x){
+							var lat = parseFloat(position[x]['lat']),
+								lng = parseFloat(position[x]['lon']);
+
+							ns.location.map.my_map = new google.maps.Map(map_holder, { center : { lat: lat, lng: lng }, zoom: 18 });
+							var lat_lng = new google.maps.LatLng(lat, lng);
+							var marker = ns.location.map.create_marker(lat_lng);
+							marker.setMap(ns.location.map.my_map);
+						};
+
+						document.getElementById('scroll_previous').addEventListener('click', function(){
+							num = ns.util.iterator.previous(num);
+							found_map(num);
+
+							scroll_previous.style.visibility = (num === 0) ? "hidden" : "visible";
+							scroll_next.style.visibility = (num === length-1) ? "hidden" : "visible";
+						});
+
+						document.getElementById('scroll_next').addEventListener('click', function(){
+							num = ns.util.iterator.next(num);
+							found_map(num);
+
+							scroll_previous.style.visibility = (num === 0) ? "hidden" : "visible";
+							scroll_next.style.visibility = (num === length-1) ? "hidden" : "visible";
+						});
+						
+						//hide scroll buttons if only one location found for username
+						if (length <= 1) {
+							document.getElementById('scroll_buttons').style.visibility = "hidden";
+						} else {
+							scroll_previous.style.visibility = "hidden";
+						}
+
+						found_map(num);
+
 					} else {
 						ns.show_action_menu('Error parsing location data.');
 					}	
@@ -254,7 +295,19 @@ ns = {
 		ns.action_menu_locate.addEventListener('click', function(){
 			ns.location.find_location();
 		});
-	}//end of events method.
+	},
+	util : {
+		iterator: {
+			previous : function(x)
+			{
+				return x-1;
+			},
+			next : function(x)
+			{
+				return x+1;
+			}
+		}
+	}
 }; //end ns obj.
 
 ns.Animate.prototype = (function(){
@@ -284,7 +337,6 @@ ns.Animate.prototype = (function(){
 })();
 
 ns.events(); //set event listeners.
-
 
 });
 
