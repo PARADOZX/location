@@ -1,8 +1,6 @@
 <?php
 
-//MAKE THIS A DAO OBJECT... LOOK IT UP www.sitecrafting.com/blog/php-patterns-part-ii
-//THE DAO OBJECT CAN CREATE THE VO OBJECT (VALUE OBJECT-- which holds the values of the retrieved data from the DB).
-//alternatively this can be the more complicated ORM (did not research this yet...)
+
 class CoordsDAO
 {
 	private $pdo;
@@ -66,7 +64,7 @@ class CoordsDAO
 			$count = $stmt->rowCount();
 
 			if ($count > 0) {
-				$stmt = $this->pdo->prepare("SELECT lon, lat FROM locations as l INNER JOIN users as u ON l.userID = u.userID WHERE username = ?");
+				$stmt = $this->pdo->prepare("SELECT lon, lat, DATE_FORMAT(created, '%m-%d-%Y %h:%i%p') as created FROM locations as l INNER JOIN users as u ON l.userID = u.userID WHERE username = ?");
 				$stmt->execute(array($this->request['user']));
 				$count = $stmt->rowCount();
 			
@@ -74,7 +72,7 @@ class CoordsDAO
 					$results_array = array();
 
 					while ($result = $stmt->fetch()){
-						$results_array[] = array('lon'=>$result['lon'], 'lat'=>$result['lat']);
+						$results_array[] = array('lon'=>$result['lon'], 'lat'=>$result['lat'], 'created'=>$result['created']);
 					}			
 					echo json_encode($results_array);
 				} else {

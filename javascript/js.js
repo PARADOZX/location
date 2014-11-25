@@ -113,7 +113,7 @@ ns = {
 					ns.location.map.latitude = lat_lng.k;
 					ns.location.map.longitude = lat_lng.B;
 
-					var marker = ns.location.map.create_marker(lat_lng);
+					var marker = ns.location.map.create_marker(lat_lng, true);
 
 					google.maps.event.addListener(marker, 'dragend', function(evt){
 					    // alert('Marker dropped: Current Lat: ' + evt.latLng.lat().toFixed(7) + ' Current Lng: ' + evt.latLng.lng().toFixed(7));
@@ -142,12 +142,15 @@ ns = {
 
 						var found_map = function(x){
 							var lat = parseFloat(position[x]['lat']),
-								lng = parseFloat(position[x]['lon']);
+								lng = parseFloat(position[x]['lon']),
+								text = document.getElementById('found_text');
 
 							ns.location.map.my_map = new google.maps.Map(map_holder, { center : { lat: lat, lng: lng }, zoom: 18 });
 							var lat_lng = new google.maps.LatLng(lat, lng);
-							var marker = ns.location.map.create_marker(lat_lng);
+							var marker = ns.location.map.create_marker(lat_lng, false);
 							marker.setMap(ns.location.map.my_map);
+
+							text.innerHTML = "Marked on: " + position[x]['created'];
 						};
 
 						document.getElementById('scroll_previous').addEventListener('click', function(){
@@ -180,13 +183,13 @@ ns = {
 					}	
 				}
 			},
-			create_marker : function(lat_long)
+			create_marker : function(lat_long, draggable)
 			{
 				return new google.maps.Marker({
 				    position: lat_long,
 				    map: this.my_map,
 				    title:"Hello World!",
-				    draggable: true
+				    draggable: draggable
 				});
 			}
 		}
