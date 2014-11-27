@@ -1,11 +1,14 @@
-html, body {
+html, body, #main {
     height: 100%;
     margin: 0px;
     padding: 0px
 }
+body {
+	font-family: "Trebuchet MS", Verdana, "Verdana Ref", sans-serif;
+}
 #container {
 	max-width: 960px;
-	background-color: #eee;
+	height: 85%;
 }
 .center {
 	margin: 0 auto;
@@ -19,8 +22,15 @@ html, body {
 #footer {
 	clear: both;
 }
-header h2{
-	color: blue;
+header {
+	height : 10%;
+}
+header h2 {
+	position: relative;
+  	top: 50%;
+  	-webkit-transform: translateY(-50%);
+  	-ms-transform: translateY(-50%);
+  	transform: translateY(-50%);
 }
 .hide {
 	display: none;
@@ -34,23 +44,27 @@ header h2{
 	height:50vh;
 	line-height:50vh;
 	margin: 1%;
-	background-color: blue;
 	font-size:2em;
 	cursor: pointer;
+	box-shadow: 1px 1px 3px 1px;
+	background: linear-gradient(to bottom, #2162a6 0%, #3e9afb 100%);
 }
 #map_holder {
 	display: none;
 	height: 70%;
+	width: 95%;
+	margin: 0px auto;
+	border: 1px solid black;
 }
-#map_menu_confirm, #map_menu_found {
+#map_menu {
 	display: none;
-	bottom: 30%;
+	bottom: 25%;
 }
 .margin10 {
 	margin : 10px;
 }
 button {
-	border-radius : 30%;
+	border-radius : 10%;
 	padding : 10px;
 }
 .text-center {

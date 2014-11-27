@@ -1,6 +1,5 @@
 $(document).ready(function(){
 
-//define namespace
 var ns = ns || {};
 
 ns = {
@@ -10,6 +9,7 @@ ns = {
 	action_menu_mark : document.getElementById('action_menu_mark'),
 	action_menu_locate : document.getElementById('action_menu_locate'),
 	action_menu : document.getElementById('action_menu'),
+	delete_button : document.getElementById('delete_button'),
 	Animate : function(elem)
 	{
 		this.elem = elem;
@@ -17,6 +17,7 @@ ns = {
 	location : {
 		geolocation_available : false,
 		get_location : false,
+		location_iterator : 0,
 		get_geolocation : function()
 		{
 			if(navigator.geolocation) {
@@ -59,7 +60,6 @@ ns = {
 						//if data starts with '[' then username found. 
 						if (data.match(/^\[/)) {
 							var coords_json = $.parseJSON(data);
-							// alert(coords_json);
 
 							ns.location.get_location = true;
 							ns.location.map.generate_map(coords_json);
@@ -71,6 +71,19 @@ ns = {
 					});
 				}
 			}
+		},
+		delete_location : function()
+		{
+			if(confirm('Really delete?')) {
+				$.ajax({
+					type : "DELETE",
+					url : "locate/db_access.php",
+					data : { locationID : ns.location.location_iterator }
+				})
+				.done(function(data){
+
+				});
+			} 
 		},
 		map : {
 			my_map : '',
@@ -95,10 +108,6 @@ ns = {
 
 				map_holder.style.display = "block";
 				map_menu.style.display = "block";
-
-				$('#container, #main').css({
-					'height' : '100%'
-				});
 
 				if(ns.location.geolocation_available) {
 					$(ns.mark).css('display', 'none');
@@ -144,6 +153,9 @@ ns = {
 							var lat = parseFloat(position[x]['lat']),
 								lng = parseFloat(position[x]['lon']),
 								text = document.getElementById('found_text');
+
+							//assign iterator value for delete functionality
+							ns.location.location_iterator = position[x]['locationID'];
 
 							ns.location.map.my_map = new google.maps.Map(map_holder, { center : { lat: lat, lng: lng }, zoom: 18 });
 							var lat_lng = new google.maps.LatLng(lat, lng);
@@ -230,7 +242,7 @@ ns = {
 
 			var mark = new ns.Animate(e.target);
 			mark.set_transition(1.5);
-			mark.explode(98, 100);
+			mark.explode(98, 75);
 
 			//use jQuery since POJS does not allow binding of multiple events
 			$(this).on('transitionend webkitTransitionEnd', function(e){
@@ -254,7 +266,7 @@ ns = {
 			
 			var locate = new ns.Animate(e.target);
 			locate.set_transition(1.5);
-			locate.explode(98, 100);
+			locate.explode(98, 75);
 
 			$(this).on('transitionend webkitTransitionEnd', function(e){
 				if(e.originalEvent.propertyName == "width") {
@@ -267,7 +279,6 @@ ns = {
 		//event handling of action_menu's confirm button
 		ns.confirm_location.addEventListener('click', function()
 		{
-			// console.log(ns.location.map.latitude);
 			var good,
 				answer = prompt('Enter a username at least 6 characters');
 			
@@ -297,6 +308,10 @@ ns = {
 		});
 		ns.action_menu_locate.addEventListener('click', function(){
 			ns.location.find_location();
+		});
+
+		ns.delete_button.addEventListener('click', function(){
+			ns.location.delete_location();
 		});
 	},
 	util : {

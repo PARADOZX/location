@@ -47,7 +47,11 @@ class CoordsDAO
 				$userID = $result['userID'];
 			}
 
+			//localhost
 			$q = "INSERT INTO locations (userID, lon, lat) VALUES (?, ?, ?)";
+			//hosting -- MySQL does not support CURRENT_TIMESTAMP
+			// $q = "INSERT INTO locations (userID, lon, lat, created) VALUES (?, ?, ?, NOW())";
+
 			$stmt = $this->pdo->prepare($q);
 			if ($stmt->execute(array($userID, $this->request['long'], $this->request['lat']))){
 				echo true;
@@ -64,7 +68,7 @@ class CoordsDAO
 			$count = $stmt->rowCount();
 
 			if ($count > 0) {
-				$stmt = $this->pdo->prepare("SELECT lon, lat, DATE_FORMAT(created, '%m-%d-%Y %h:%i%p') as created FROM locations as l INNER JOIN users as u ON l.userID = u.userID WHERE username = ?");
+				$stmt = $this->pdo->prepare("SELECT locationID, lon, lat, DATE_FORMAT(created, '%m-%d-%Y %h:%i%p') as created FROM locations as l INNER JOIN users as u ON l.userID = u.userID WHERE username = ?");
 				$stmt->execute(array($this->request['user']));
 				$count = $stmt->rowCount();
 			
@@ -72,7 +76,7 @@ class CoordsDAO
 					$results_array = array();
 
 					while ($result = $stmt->fetch()){
-						$results_array[] = array('lon'=>$result['lon'], 'lat'=>$result['lat'], 'created'=>$result['created']);
+						$results_array[] = array('locationID'=>$result['locationID'], 'lon'=>$result['lon'], 'lat'=>$result['lat'], 'created'=>$result['created']);
 					}			
 					echo json_encode($results_array);
 				} else {
