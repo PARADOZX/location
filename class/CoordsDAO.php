@@ -8,26 +8,27 @@ class CoordsDAO
 
 	function __construct($request, $num_param)
 	{
-		//confirm correct # of parameters in request
-		if (count($request) === $num_param) {
-			//confirm each parameter holds a value
-			foreach ($request as $key => $value) {
-				if ($value == '') throw new Exception('Error retrieving location data.  Please try again.');
-			}
+		if (is_array($request)) {
+			//confirm correct # of parameters in request
+			if (count($request) === $num_param) {
+				//confirm each parameter holds a value
+				foreach ($request as $key => $value) {
+					if ($value == '') throw new Exception('Error retrieving location data.  Please try again.');
+				}
+			} else throw new Exception('Error retrieving location data.  Please try again.');
+		}
 
-			$this->request = $request;	
+		$this->request = $request;	
 
-			try {
-				//localhost DB path
-				$this->pdo = new PDO('mysql:dbname=location;host=localhost','root','Shiet1sv') or die('FAILED CONNECTION');
-				//hosting DB path
-				// $this->pdo = new PDO('mysql:dbname=byjames1_location;host=localhost','byjames1_ling','Shiet1sv') or die('FAILED CONNECTION');
-
-				$this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-			} catch (PDOException $e){
-				echo "Error : " + $e->getMessage();
-			}
-		} else throw new Exception('Error retrieving location data.  Please try again.');
+		try {
+			//localhost DB path
+			$this->pdo = new PDO('mysql:dbname=location;host=localhost','root','Shiet1sv') or die('FAILED CONNECTION');
+			//hosting DB path
+			// $this->pdo = new PDO('mysql:dbname=byjames1_location;host=localhost','byjames1_ling','Shiet1sv') or die('FAILED CONNECTION');
+			$this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		} catch (PDOException $e){
+			echo "Error : " + $e->getMessage();
+		}
 	}
 	public function saveData()
 	{
@@ -87,6 +88,21 @@ class CoordsDAO
 				echo "Username not found.";
 			}
 
+		} catch (PDOException $e) {
+			echo 'ERROR::' . $e->getMessage();
+		}
+	}
+	public function deleteData()
+	{
+		try {
+			$stmt = $this->pdo->prepare("DELETE FROM locations WHERE locationID = ? LIMIT 1");
+			$stmt->execute(array($this->request));
+			$count = $stmt->rowCount();
+			if ($count > 0) {
+				echo 'Delete successful.';
+			} else {
+				throw new Exception('Error:: Location could not be found.');
+			}
 		} catch (PDOException $e) {
 			echo 'ERROR::' . $e->getMessage();
 		}

@@ -10,6 +10,7 @@ ns = {
 	action_menu_locate : document.getElementById('action_menu_locate'),
 	action_menu : document.getElementById('action_menu'),
 	delete_button : document.getElementById('delete_button'),
+	back_to_menu : document.getElementById('back_to_menu'),
 	Animate : function(elem)
 	{
 		this.elem = elem;
@@ -18,6 +19,7 @@ ns = {
 		geolocation_available : false,
 		get_location : false,
 		location_iterator : 0,
+		coordinates : [],
 		get_geolocation : function()
 		{
 			if(navigator.geolocation) {
@@ -47,19 +49,22 @@ ns = {
 		},
 		find_location : function()
 		{
+			$( "#scroll_previous, #scroll_next" ).off();	
+
 			var good, 
 				name = prompt('What is your username?');
 			if (name != null) {
 				if(ns.length_valid(name, true)) {
 					$.ajax({
 						type : "GET",
-						url : "locate/db_access.php",
+						url : "db_access.php",
 						data : { user: name }
 					})
 					.done(function(data) {
 						//if data starts with '[' then username found. 
 						if (data.match(/^\[/)) {
 							var coords_json = $.parseJSON(data);
+							ns.location.coordinates = coords_json;  //cache for delete functionality
 
 							ns.location.get_location = true;
 							ns.location.map.generate_map(coords_json);
@@ -77,11 +82,30 @@ ns = {
 			if(confirm('Really delete?')) {
 				$.ajax({
 					type : "DELETE",
-					url : "locate/db_access.php",
+					url : "db_access.php",
 					data : { locationID : ns.location.location_iterator }
 				})
 				.done(function(data){
+					if (data == "Delete successful.") {
+						// REFRESHES LOCATE MAP WITH STRANGE BUGS THAT I CANNOT FIGURE OUT  //debug
+							//1) cannot find 'lat' of undefined, however map still works which uses 'lat' property
+							//2) when scrolling through array it calls multiple elemnts simultaneously
+						// for (x in ns.location.coordinates){
+						// 	if (ns.location.coordinates[x]['locationID'] === ns.location.location_iterator) {
+						// 		ns.location.coordinates.splice(x, 1);
+						// 	}
+						// }
 
+						// if (ns.location.coordinates.length === 0){
+						// 	var text = "No saved location for this username";
+						// 	ns.show_action_menu(text);
+						// } else {
+						// 	ns.location.get_location = true;
+						// 	ns.location.map.generate_map(ns.location.coordinates);
+						// }
+						var text = "deleted";
+						ns.show_action_menu(text);	
+					}
 				});
 			} 
 		},
@@ -150,9 +174,19 @@ ns = {
 							scroll_next = document.getElementById('scroll_next');
 
 						var found_map = function(x){
+
 							var lat = parseFloat(position[x]['lat']),
 								lng = parseFloat(position[x]['lon']),
 								text = document.getElementById('found_text');
+
+							//debug -- moved into found_map func
+							//hide scroll buttons if only one location found for username
+							if (length <= 1) {
+								document.getElementById('scroll_buttons').style.visibility = "hidden";
+							} else {
+								scroll_previous.style.visibility = "hidden";
+								scroll_next.style.visibility = "visible";
+							}
 
 							//assign iterator value for delete functionality
 							ns.location.location_iterator = position[x]['locationID'];
@@ -165,28 +199,33 @@ ns = {
 							text.innerHTML = "Marked on: " + position[x]['created'];
 						};
 
-						document.getElementById('scroll_previous').addEventListener('click', function(){
+						var previous = function()
+						{
 							num = ns.util.iterator.previous(num);
 							found_map(num);
 
 							scroll_previous.style.visibility = (num === 0) ? "hidden" : "visible";
-							scroll_next.style.visibility = (num === length-1) ? "hidden" : "visible";
-						});
+							scroll_next.style.visibility = (num >= length-1) ? "hidden" : "visible";
+						}
 
-						document.getElementById('scroll_next').addEventListener('click', function(){
+						var next = function()
+						{
 							num = ns.util.iterator.next(num);
 							found_map(num);
 
 							scroll_previous.style.visibility = (num === 0) ? "hidden" : "visible";
-							scroll_next.style.visibility = (num === length-1) ? "hidden" : "visible";
-						});
-						
-						//hide scroll buttons if only one location found for username
-						if (length <= 1) {
-							document.getElementById('scroll_buttons').style.visibility = "hidden";
-						} else {
-							scroll_previous.style.visibility = "hidden";
+							scroll_next.style.visibility = (num >= length-1) ? "hidden" : "visible";
 						}
+						
+						//debug -- removeEvent Listeners may not be necessary
+						// scroll_previous.removeEventListener('click', previous);
+						// scroll_next.removeEventListener('click', next);
+
+						// scroll_previous.addEventListener('click', previous);
+						// scroll_next.addEventListener('click', next);
+
+						$("#scroll_previous").on('click', previous);
+						$("#scroll_next").on('click', next);
 
 						found_map(num);
 
@@ -284,8 +323,8 @@ ns = {
 			
 			if(good = ns.length_valid(answer)) {
 				$.ajax({
-					type : "GET",	//change to POST
-					url : "mark/db_access.php",
+					type : "POST",	
+					url : "db_access.php",
 					data : { user: answer, lat: ns.location.map.latitude, long: ns.location.map.longitude }
 				})
 				.done(function(data)
@@ -312,6 +351,10 @@ ns = {
 
 		ns.delete_button.addEventListener('click', function(){
 			ns.location.delete_location();
+		});
+
+		ns.back_to_menu.addEventListener('click', function(){
+			ns.show_action_menu('Please choose an option.');
 		});
 	},
 	util : {

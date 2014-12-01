@@ -42,7 +42,7 @@ abstract class API
 
         $this->args = explode('/', rtrim($request, '/'));
 
-        $this->verb = $this->args[3];
+        // $this->verb = $this->args[3];
         
         $this->method = $_SERVER['REQUEST_METHOD'];
         
@@ -59,11 +59,17 @@ abstract class API
 
         switch($this->method) {
         case 'DELETE':
+            $request = file_get_contents("php://input");
+            $this->request = (int)substr($request, 11);
+            $this->verb = "delete";
+            break;
         case 'POST':
             $this->request = $this->_cleanInputs($_POST);
+            $this->verb = "mark";
             break;
         case 'GET':
             $this->request = $this->_cleanInputs($_GET);
+            $this->verb = "locate";
             break;
         case 'PUT':
             $this->request = $this->_cleanInputs($_GET);
