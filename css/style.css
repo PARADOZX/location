@@ -3,6 +3,15 @@ html, body, #main {
     margin: 0px;
     padding: 0px
 }
+html {
+	height: 100%;
+	background: url('../img/pin.jpg') no-repeat center center fixed;
+	background-size: cover;
+
+	/*    ~~ older IE compatibility ~~   */
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/pin.jpg', sizingMethod='scale');
+	-ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='..img/pin.jpg', sizingMethod='scale')";
+}
 body {
 	font-family: "Trebuchet MS", Verdana, "Verdana Ref", sans-serif;
 }
@@ -32,13 +41,16 @@ header h2 {
   	-ms-transform: translateY(-50%);
   	transform: translateY(-50%);
 }
+.height_auto {
+	height: auto !important;
+}
 .hide {
 	display: none;
 }
 #locate {
 	float: right;
 }
-.location_button {
+/*.location_button {
 	display: inline-block;
 	width:47.2%;
 	height:50vh;
@@ -48,7 +60,29 @@ header h2 {
 	cursor: pointer;
 	box-shadow: 1px 1px 3px 1px;
 	background: linear-gradient(to bottom, #2162a6 0%, #3e9afb 100%);
+}*/
+.location_button {
+	display: inline-block;
+	width:47.2%;
+	height:10vh;
+	line-height:10vh;
+	margin: 1%;
+	font-size:1.5em;
+	cursor: pointer;
+	box-shadow: 1px 1px 3px 1px;
+	background: linear-gradient(to bottom, white 0%, white 100%);
 }
+/*#main_buttons_outer {
+	position: relative;
+	width : auto;
+}*/
+/*#main_buttons_inner {
+	position: absolute;
+	top: 0px;
+	bottom: 900px;
+	right: 0px;
+	left: 0px;
+}*/
 #map_holder {
 	display: none;
 	height: 70%;

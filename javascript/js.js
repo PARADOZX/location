@@ -179,10 +179,10 @@ ns = {
 								lng = parseFloat(position[x]['lon']),
 								text = document.getElementById('found_text');
 
-							//debug -- moved into found_map func
 							//hide scroll buttons if only one location found for username
 							if (length <= 1) {
-								document.getElementById('scroll_buttons').style.visibility = "hidden";
+								scroll_previous.style.visibility = "hidden";
+								scroll_next.style.visibility = "hidden";
 							} else {
 								scroll_previous.style.visibility = "hidden";
 								scroll_next.style.visibility = "visible";
