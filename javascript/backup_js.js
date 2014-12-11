@@ -160,7 +160,7 @@ ns = {
 					var lat_lng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 
 					ns.location.map.latitude = lat_lng.k;
-					ns.location.map.longitude = lat_lng.D;
+					ns.location.map.longitude = lat_lng.B;
 
 					var marker = ns.location.map.create_marker(lat_lng, true);
 
@@ -233,6 +233,13 @@ ns = {
 							scroll_next.style.visibility = (num >= length-1) ? "hidden" : "visible";
 						}
 						
+						//debug -- removeEvent Listeners may not be necessary
+						// scroll_previous.removeEventListener('click', previous);
+						// scroll_next.removeEventListener('click', next);
+
+						// scroll_previous.addEventListener('click', previous);
+						// scroll_next.addEventListener('click', next);
+
 						$("#scroll_previous").on('click', previous);
 						$("#scroll_next").on('click', next);
 
@@ -308,7 +315,6 @@ ns = {
 			}, 250)
 
 			
-			
 			//deprecated v1.0
 			//use jQuery since POJS does not allow binding of multiple events
 			// $(this).on('transitionend webkitTransitionEnd', function(e){
@@ -345,10 +351,9 @@ ns = {
 		//event handling of action_menu's confirm button
 		ns.confirm_location.addEventListener('click', function()
 		{
-			var good,
-				answer = prompt('Enter a username at least 6 characters');
-			
-			if(good = ns.length_valid(answer)) {
+			var answer = prompt('Enter a username at least 6 characters');
+
+			if(ns.length_valid(answer)) {
 				$.ajax({
 					type : "POST",	
 					url : "db_access.php",

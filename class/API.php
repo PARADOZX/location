@@ -60,8 +60,16 @@ abstract class API
         switch($this->method) {
         case 'DELETE':
             $request = file_get_contents("php://input");
-            $this->request = (int)substr($request, 11);
-            $this->verb = "delete";
+
+            if (preg_match('/^locationID/', $request)){
+                $this->request = (int)substr($request, 11); 
+                $this->verb = "delete"; 
+            } else if (preg_match('/^delete_all/', $request)){
+                echo 'delete all';
+            } else {
+                throw new Exception("Error:: Can not delete.");
+            }
+            
             break;
         case 'POST':
             $this->request = $this->_cleanInputs($_POST);

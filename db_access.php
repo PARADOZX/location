@@ -6,7 +6,7 @@ $request = $_SERVER['REQUEST_URI'];
 
 try {
 	$api = new LocationAPI($request);
-	$api->processAPI();
+	$api->processAPI();  
 } catch (Exception $e) {
 	//handle exception
 }

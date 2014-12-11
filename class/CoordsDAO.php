@@ -15,7 +15,7 @@ class CoordsDAO
 				foreach ($request as $key => $value) {
 					if ($value == '') throw new Exception('Error retrieving location data.  Please try again.');
 				}
-			} else throw new Exception('Error retrieving location data.  Please try again.');
+			} else throw new Exception('Eror retrieving location data.  Please try again.');
 		}
 
 		$this->request = $request;	

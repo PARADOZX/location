@@ -5,7 +5,7 @@ html, body, #main {
 }
 html {
 	height: 100%;
-	background: url('../img/pin.jpg') no-repeat center center fixed;
+	background: url('../img/location_1440x900.jpg') no-repeat center center fixed;
 	background-size: cover;
 
 	/*    ~~ older IE compatibility ~~   */
@@ -34,21 +34,25 @@ body {
 header {
 	height : 10%;
 }
-header h2 {
+/*header img {
 	position: relative;
   	top: 50%;
   	-webkit-transform: translateY(-50%);
   	-ms-transform: translateY(-50%);
   	transform: translateY(-50%);
-}
+}*/
 .height_auto {
 	height: auto !important;
 }
 .hide {
 	display: none;
 }
+.land_textpic {
+	display: block;
+	width : 80%;
+}
 #locate {
-	float: right;
+	right: 10px;
 }
 /*.location_button {
 	display: inline-block;
@@ -62,27 +66,18 @@ header h2 {
 	background: linear-gradient(to bottom, #2162a6 0%, #3e9afb 100%);
 }*/
 .location_button {
+	position: absolute;
+	bottom: 2px;
 	display: inline-block;
-	width:47.2%;
+	width:37.2%;
 	height:10vh;
 	line-height:10vh;
-	margin: 1%;
+	margin: 5%;
 	font-size:1.5em;
 	cursor: pointer;
-	box-shadow: 1px 1px 3px 1px;
-	background: linear-gradient(to bottom, white 0%, white 100%);
+	/*box-shadow: 1px 1px 3px 1px;
+	background: linear-gradient(to bottom, white 0%, white 100%);*/
 }
-/*#main_buttons_outer {
-	position: relative;
-	width : auto;
-}*/
-/*#main_buttons_inner {
-	position: absolute;
-	top: 0px;
-	bottom: 900px;
-	right: 0px;
-	left: 0px;
-}*/
 #map_holder {
 	display: none;
 	height: 70%;
@@ -94,6 +89,9 @@ header h2 {
 	display: none;
 	bottom: 25%;
 }
+#mark {
+	left: 10px;
+}
 .margin10 {
 	margin : 10px;
 }
@@ -104,8 +102,28 @@ button {
 .text-center {
 	text-align: center;
 }
-/*@media only screen and (max-width: 709px) {
-	.location_button {
-		font-size:1em;
-	}
-}	*/
+
+
+
+
+/****** DEBUG ******/
+.spins {
+    -webkit-animation: whirl 1s 5; /* Chrome, Safari, Opera */
+    animation: whirl 1s 5;
+}
+
+/* Chrome, Safari, Opera */
+@-webkit-keyframes whirl {
+    0%   {transform: rotateY(0deg);}
+    25%  {transform: rotateY(90deg);}
+    50%  {transform: rotateY(180deg);}
+    100% {transform: rotateY(0deg);}
+}
+
+/* Standard syntax */
+@keyframes whirl {
+    0%   {transform: rotateY(0deg);}
+    25%  {transform: rotateY(90deg);}
+    50%  {transform: rotateY(180deg);}
+    100% {transform: rotateY(0deg);}}
+}
