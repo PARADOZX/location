@@ -60,25 +60,36 @@ ns = {
 
 			if (name != null) {
 				if(ns.length_valid(name, true)) {
-					$.ajax({
-						type : "GET",
-						url : "db_access.php",
-						data : { user: name }
-					})
-					.done(function(data) {
-						//if data starts with '[' then username found. 
-						if (data.match(/^\[/)) {
-							var coords_json = $.parseJSON(data);
-							ns.location.coordinates = coords_json;  //cache for delete functionality
 
-							ns.location.get_location = true;
-							ns.location.map.generate_map(coords_json);
-								
-						} else {
-							var text = data; 
-							ns.show_action_menu(text);
-						}
-					});
+					$('#mym').addClass('spins');
+
+					setTimeout(function(){
+
+						mym.src = "img/loading.png";
+
+						$.ajax({
+							type : "GET",
+							url : "db_access.php",
+							data : { user: name }
+						})
+						.done(function(data) {
+							
+							$('#mym').css('display', 'none');
+
+							//if data starts with '[' then username found. 
+							if (data.match(/^\[/)) {
+								var coords_json = $.parseJSON(data);
+								ns.location.coordinates = coords_json;  //cache for delete functionality
+
+								ns.location.get_location = true;
+								ns.location.map.generate_map(coords_json);
+							} else {
+								var text = data; 
+								ns.show_action_menu(text);
+							}
+						});
+
+					}, 250)
 				}
 			}
 		},
@@ -116,14 +127,18 @@ ns = {
 		},
 		delete_all : function()
 		{
-			$.ajax({
-				type : "DELETE",
-				url : "db_access.php",
-				data : { delete_all: ns.location.username }
-			})
-			.done(function(data){
-				alert(data);
-			});
+			if(confirm('Really delete?')) {
+				$.ajax({
+					type : "DELETE",
+					url : "db_access.php",
+					data : { delete_all: ns.location.username }
+				})
+				.done(function(data){
+					if(data == true) {
+						ns.show_action_menu('Delete all successful');
+					}
+				});
+			}
 		},
 		map : {
 			my_map : '',
@@ -172,6 +187,8 @@ ns = {
 
 					marker.setMap(ns.location.map.my_map);
 
+					$('#mym').css('display', 'none');
+
 					ns.location.geolocation_available = false;
 				}
 
@@ -211,6 +228,8 @@ ns = {
 							var lat_lng = new google.maps.LatLng(lat, lng);
 							var marker = ns.location.map.create_marker(lat_lng, false);
 							marker.setMap(ns.location.map.my_map);
+
+							$('#mym').css('display', 'none');
 
 							text.innerHTML = "Marked on: " + position[x]['created'];
 						};
@@ -307,8 +326,6 @@ ns = {
 
 			}, 250)
 
-			
-			
 			//deprecated v1.0
 			//use jQuery since POJS does not allow binding of multiple events
 			// $(this).on('transitionend webkitTransitionEnd', function(e){
@@ -330,16 +347,24 @@ ns = {
 			var mark = new ns.Animate(ns.mark);
 			mark.disappear();
 			
-			var locate = new ns.Animate(e.target);
-			locate.set_transition(1.5);
-			locate.explode(98, 75);
+			//deprecated v1.0
+			// var locate = new ns.Animate(e.target);
+			// locate.set_transition(1.5);
+			// locate.explode(98, 75);
 
-			$(this).on('transitionend webkitTransitionEnd', function(e){
-				if(e.originalEvent.propertyName == "width") {
-					ns.location.find_location();
-				}
+			try {
+				ns.location.find_location();
+			} catch(err) {
+				alert(err);
+			}
 
-			});
+			//deprecated v1.0
+			// $(this).on('transitionend webkitTransitionEnd', function(e){
+			// 	if(e.originalEvent.propertyName == "width") {
+			// 		ns.location.find_location();
+			// 	}
+
+			// });
 		});
 
 		//event handling of action_menu's confirm button

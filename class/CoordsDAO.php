@@ -101,7 +101,21 @@ class CoordsDAO
 			if ($count > 0) {
 				echo 'Delete successful.';
 			} else {
-				throw new Exception('Error:: Location could not be found.');
+				throw new Exception('ERROR:: Location could not be found.');
+			}
+		} catch (PDOException $e) {
+			echo 'ERROR::' . $e->getMessage();
+		}
+	}
+	public function deleteAllData()
+	{
+		try {
+			$stmt = $this->pdo->prepare("DELETE l.* FROM locations as l INNER JOIN users as u ON l.userID = u.userID WHERE u.username = ?");
+			$stmt->execute(array($this->request));
+			if ($stmt->rowCount()){
+				echo true;
+			} else {
+				throw new Exception('ERROR:: User cannot be found');
 			}
 		} catch (PDOException $e) {
 			echo 'ERROR::' . $e->getMessage();

@@ -31,6 +31,15 @@ class LocationAPI extends API
 			echo $e->getMessage();
 		}
 	}
+	protected function deleteAll()
+	{
+		try {
+			$deleteAll = new CoordsDAO($this->request, 1);
+			$deleteAll->deleteAllData();
+		} catch (Exception $e) {
+			echo $e->getMessage();
+		}
+	}
 }
 
 ?>
