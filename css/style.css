@@ -7,6 +7,7 @@ html {
 	height: 100%;
 	background: url('../img/location_1440x900.jpg') no-repeat center center fixed;
 	background-size: cover;
+	transition: background 5s;	
 
 	/*    ~~ older IE compatibility ~~   */
 	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/pin.jpg', sizingMethod='scale');
@@ -34,6 +35,13 @@ button {
 }
 #footer {
 	clear: both;
+}
+.grayscale {
+	-webkit-filter: grayscale(100%);
+  	-moz-filter: grayscale(100%);
+  	-ms-filter: grayscale(100%);
+  	-o-filter: grayscale(100%);
+  	filter: grayscale(100%);
 }
 header {
 	height : 10%;
@@ -88,10 +96,26 @@ header {
 	width: 95%;
 	margin: 0px auto;
 	border: 1px solid black;
+	border-top-left-radius: 25px;
+	-webkit-border-top-left-radius: 25px;
+	-moz-border-top-left-radius: 25px;
+	border-top-right-radius: 25px;
+	-webkit-border-top-right-radius: 25px;
+	-moz-border-top-right-radius: 25px;
 }
 #map_menu {
 	display: none;
 	bottom: 25%;
+	width: 95%;
+	background-color: rgba(238, 238, 238, 0.6);
+	margin: 0px auto;
+	border: 1px solid black;
+	border-bottom-left-radius: 25px;
+	-webkit-border-bottom-left-radius: 25px;
+	-moz-border-bottom-left-radius: 25px;
+	border-bottom-right-radius: 25px;
+	-webkit-border-bottom-right-radius: 25px;
+	-moz-border-bottom-right-radius: 25px;
 }
 #mark {
 	left: 10px;

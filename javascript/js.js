@@ -12,6 +12,7 @@ ns = {
 	delete_button : document.getElementById('delete_button'),
 	back_to_menu : document.getElementById('back_to_menu'),
 	delete_all : document.getElementById('delete_all'),
+	center : document.getElementById('center'),
 	Animate : function(elem)
 	{
 		this.elem = elem;
@@ -64,32 +65,30 @@ ns = {
 					$('#mym').addClass('spins');
 
 					setTimeout(function(){
-
 						mym.src = "img/loading.png";
+					}, 250);
 
-						$.ajax({
-							type : "GET",
-							url : "db_access.php",
-							data : { user: name }
-						})
-						.done(function(data) {
-							
-							$('#mym').css('display', 'none');
+					$.ajax({
+						type : "GET",
+						url : "db_access.php",
+						data : { user: name }
+					})
+					.done(function(data) {
+						
+						$('#mym').css('display', 'none');
 
-							//if data starts with '[' then username found. 
-							if (data.match(/^\[/)) {
-								var coords_json = $.parseJSON(data);
-								ns.location.coordinates = coords_json;  //cache for delete functionality
+						//if data starts with '[' then username found. 
+						if (data.match(/^\[/)) {
+							var coords_json = $.parseJSON(data);
+							ns.location.coordinates = coords_json;  //cache for delete functionality
 
-								ns.location.get_location = true;
-								ns.location.map.generate_map(coords_json);
-							} else {
-								var text = data; 
-								ns.show_action_menu(text);
-							}
-						});
-
-					}, 250)
+							ns.location.get_location = true;
+							ns.location.map.generate_map(coords_json);
+						} else {
+							var text = data; 
+							ns.show_action_menu(text);
+						}
+					});
 				}
 			}
 		},
@@ -144,6 +143,7 @@ ns = {
 			my_map : '',
 			latitude : 0,
 			longitude : 0,
+			marker : '',
 			map_options : function(position)
 			{
 				return {
@@ -177,7 +177,8 @@ ns = {
 					ns.location.map.latitude = lat_lng.k;
 					ns.location.map.longitude = lat_lng.D;
 
-					var marker = ns.location.map.create_marker(lat_lng, true);
+					//set to ns.location.map.marker also so it can be accessed by center button
+					var marker = ns.location.map.marker = ns.location.map.create_marker(lat_lng, true); 
 
 					google.maps.event.addListener(marker, 'dragend', function(evt){
 					    // alert('Marker dropped: Current Lat: ' + evt.latLng.lat().toFixed(7) + ' Current Lng: ' + evt.latLng.lng().toFixed(7));
@@ -188,6 +189,8 @@ ns = {
 					marker.setMap(ns.location.map.my_map);
 
 					$('#mym').css('display', 'none');
+					$('#mym_text').css('display', 'block');
+					$('html').css('background-image', 'url("img/location_1440x900_blackwhite.jpg")'); 
 
 					ns.location.geolocation_available = false;
 				}
@@ -230,6 +233,8 @@ ns = {
 							marker.setMap(ns.location.map.my_map);
 
 							$('#mym').css('display', 'none');
+							$('#mym_text').css('display', 'block');
+							$('html').css('background-image', 'url("img/location_1440x900_blackwhite.jpg")');  
 
 							text.innerHTML = "Marked on: " + position[x]['created'];
 						};
@@ -411,6 +416,11 @@ ns = {
 
 		ns.delete_all.addEventListener('click', function(){
 			ns.location.delete_all();
+		});
+
+		ns.center.addEventListener('click', function(){
+			var marker_position = ns.location.map.marker.getPosition();
+			ns.location.map.my_map.setCenter(marker_position);
 		});
 	},
 	util : {
