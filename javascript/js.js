@@ -174,8 +174,11 @@ ns = {
 					//create and set marker on map.
 					var lat_lng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 
-					ns.location.map.latitude = lat_lng.k;
-					ns.location.map.longitude = lat_lng.D;
+					//ns.location.map.latitude = lat_lng.k;
+					//ns.location.map.longitude = lat_lng.D;
+
+					ns.location.map.latitude = position.coords.latitude;
+					ns.location.map.longitude = position.coords.longitude;
 
 					//set to ns.location.map.marker also so it can be accessed by center button
 					var marker = ns.location.map.marker = ns.location.map.create_marker(lat_lng, true); 
