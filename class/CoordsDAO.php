@@ -22,9 +22,9 @@ class CoordsDAO
 
 		try {
 			//localhost DB path
-			$this->pdo = new PDO('mysql:dbname=location;host=localhost','root','Shiet1sv') or die('FAILED CONNECTION');
+			$this->pdo = new PDO('mysql:dbname=location;host=localhost','root','S*******') or die('FAILED CONNECTION');
 			//hosting DB path
-			// $this->pdo = new PDO('mysql:dbname=byjames1_location;host=localhost','byjames1_ling','Shiet1sv') or die('FAILED CONNECTION');
+			// $this->pdo = new PDO('mysql:dbname=byjames1_location;host=localhost','byjames1_ling','S*******') or die('FAILED CONNECTION');
 			$this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		} catch (PDOException $e){
 			echo "Error : " + $e->getMessage();
